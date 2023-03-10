@@ -11,31 +11,24 @@
       @submit="handleSubmit"
     >
       <a-form-item
-        field="username"
+        field="Username"
         :rules="[{ required: true, message: $t('login.form.userName.errMsg') }]"
         :validate-trigger="['change', 'blur']"
         hide-label
       >
-        <a-input
-          v-model="userInfo.username"
-          :placeholder="$t('login.form.userName.placeholder')"
-        >
+        <a-input v-model="userInfo.Username">
           <template #prefix>
             <icon-user />
           </template>
         </a-input>
       </a-form-item>
       <a-form-item
-        field="password"
+        field="Password"
         :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
         :validate-trigger="['change', 'blur']"
         hide-label
       >
-        <a-input-password
-          v-model="userInfo.password"
-          :placeholder="$t('login.form.password.placeholder')"
-          allow-clear
-        >
+        <a-input-password v-model="userInfo.Password" allow-clear>
           <template #prefix>
             <icon-lock />
           </template>
@@ -83,11 +76,11 @@
   const loginConfig = useStorage('login-config', {
     rememberPassword: true,
     username: 'admin', // 演示默认值
-    password: 'admin', // demo default value
+    password: '', // demo default value
   });
   const userInfo = reactive({
-    username: loginConfig.value.username,
-    password: loginConfig.value.password,
+    Username: loginConfig.value.username,
+    Password: loginConfig.value.password,
   });
 
   const handleSubmit = async ({
