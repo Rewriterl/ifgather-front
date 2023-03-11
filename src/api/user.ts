@@ -22,6 +22,10 @@ export function getUserInfo() {
   return axios.get<UserState>('/user');
 }
 
+export function patchUserInfo(data: Partial<UserState>) {
+  return axios.patch<UserState>('/user', data);
+}
+
 export function getMenuList() {
-  return axios.post<RouteRecordNormalized[]>('/api/user/menu');
+  return axios.post<RouteRecordNormalized[]>('user/menu');
 }

@@ -1,5 +1,3 @@
-import { logout } from '@/api/user';
-
 const TOKEN_KEY = 'ifgather';
 
 const getCookie = (name: string): string | undefined => {

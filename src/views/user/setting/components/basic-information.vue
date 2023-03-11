@@ -22,7 +22,19 @@
       />
     </a-form-item>
     <a-form-item
-      field="nickname"
+      field="phone"
+      :label="$t('userSetting.basicInfo.form.label.phone')"
+      :rules="[
+        {
+          required: true,
+          message: $t('userSetting.form.error.phone.required'),
+        },
+      ]"
+    >
+      <a-input v-model="formData.phone" />
+    </a-form-item>
+    <a-form-item
+      field="nick_name"
       :label="$t('userSetting.basicInfo.form.label.nickname')"
       :rules="[
         {
@@ -32,72 +44,12 @@
       ]"
     >
       <a-input
-        v-model="formData.nickname"
+        v-model="formData.nick_name"
         :placeholder="$t('userSetting.basicInfo.placeholder.nickname')"
       />
     </a-form-item>
     <a-form-item
-      field="countryRegion"
-      :label="$t('userSetting.basicInfo.form.label.countryRegion')"
-      :rules="[
-        {
-          required: true,
-          message: $t('userSetting.form.error.countryRegion.required'),
-        },
-      ]"
-    >
-      <a-select
-        v-model="formData.countryRegion"
-        :placeholder="$t('userSetting.basicInfo.placeholder.area')"
-      >
-        <a-option value="China">中国</a-option>
-      </a-select>
-    </a-form-item>
-    <a-form-item
-      field="area"
-      :label="$t('userSetting.basicInfo.form.label.area')"
-      :rules="[
-        {
-          required: true,
-          message: $t('userSetting.form.error.area.required'),
-        },
-      ]"
-    >
-      <a-cascader
-        v-model="formData.area"
-        :placeholder="$t('userSetting.basicInfo.placeholder.area')"
-        :options="[
-          {
-            label: '北京',
-            value: 'beijing',
-            children: [
-              {
-                label: '北京',
-                value: 'beijing',
-                children: [
-                  {
-                    label: '朝阳',
-                    value: 'chaoyang',
-                  },
-                ],
-              },
-            ],
-          },
-        ]"
-        allow-clear
-      />
-    </a-form-item>
-    <a-form-item
-      field="address"
-      :label="$t('userSetting.basicInfo.form.label.address')"
-    >
-      <a-input
-        v-model="formData.address"
-        :placeholder="$t('userSetting.basicInfo.placeholder.address')"
-      />
-    </a-form-item>
-    <a-form-item
-      field="profile"
+      field="remark"
       :label="$t('userSetting.basicInfo.form.label.profile')"
       :rules="[
         {
@@ -108,13 +60,13 @@
       row-class="keep-margin"
     >
       <a-textarea
-        v-model="formData.profile"
+        v-model="formData.remark"
         :placeholder="$t('userSetting.basicInfo.placeholder.profile')"
       />
     </a-form-item>
     <a-form-item>
       <a-space>
-        <a-button type="primary" @click="validate">
+        <a-button type="primary" @click="validateAndSubmit">
           {{ $t('userSetting.save') }}
         </a-button>
         <a-button type="secondary" @click="reset">
@@ -126,24 +78,35 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
+  import { onBeforeMount, ref } from 'vue';
   import { FormInstance } from '@arco-design/web-vue/es/form';
   import { BasicInfoModel } from '@/api/user-center';
+  import { useUserStore } from '@/store';
+  import { Message } from '@arco-design/web-vue';
 
+  const userStore = useUserStore();
   const formRef = ref<FormInstance>();
   const formData = ref<BasicInfoModel>({
+    phone: '',
     email: '',
-    nickname: '',
-    countryRegion: '',
-    area: '',
-    address: '',
-    profile: '',
+    nick_name: '',
+    remark: '',
   });
-  const validate = async () => {
+  onBeforeMount(() => {
+    formData.value.phone = userStore.userInfo.phone || '';
+    formData.value.email = userStore.userInfo.email || '';
+    formData.value.nick_name = userStore.userInfo.nick_name || '';
+    formData.value.remark = userStore.userInfo.remark || '';
+  });
+  const validateAndSubmit = async () => {
     const res = await formRef.value?.validate();
     if (!res) {
-      // do some thing
-      // you also can use html-type to submit
+      try {
+        await userStore.patchUserInfo(formData.value);
+        Message.success('修改成功');
+      } catch (e: any) {
+        console.log(e.message);
+      }
     }
   };
   const reset = async () => {

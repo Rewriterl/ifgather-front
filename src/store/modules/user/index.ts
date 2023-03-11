@@ -4,6 +4,7 @@ import {
   logout as userLogout,
   getUserInfo,
   LoginData,
+  patchUserInfo,
 } from '@/api/user';
 import { clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
@@ -12,20 +13,14 @@ import useAppStore from '../app';
 
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
-    name: undefined,
+    username: undefined,
     avatar: undefined,
-    job: undefined,
-    organization: undefined,
-    location: undefined,
     email: undefined,
-    introduction: undefined,
-    personalWebsite: undefined,
-    jobName: undefined,
-    organizationName: undefined,
-    locationName: undefined,
+    nick_name: undefined,
     phone: undefined,
-    registrationDate: undefined,
-    accountId: undefined,
+    create_at: undefined,
+    remark: undefined,
+    id: undefined,
     certification: undefined,
     role: '',
   }),
@@ -46,6 +41,7 @@ const useUserStore = defineStore('user', {
     // Set user's information
     setInfo(partial: Partial<UserState>) {
       this.$patch(partial);
+      this.userInfo.role = partial.username === 'admin' ? 'admin' : '';
     },
 
     // Reset user's information
@@ -63,14 +59,17 @@ const useUserStore = defineStore('user', {
     // Login
     async login(loginForm: LoginData) {
       try {
-        const res = await userLogin(loginForm);
-        console.log(res);
+        await userLogin(loginForm);
         // setToken(res.data.token);
       } catch (err) {
         console.log(err);
         // clearToken();
         throw err;
       }
+    },
+    async patchUserInfo(data: Partial<UserState>) {
+      await patchUserInfo(data);
+      await this.info();
     },
     logoutCallBack() {
       const appStore = useAppStore();
