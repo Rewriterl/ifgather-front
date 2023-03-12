@@ -23,6 +23,7 @@ export interface AddParams {
   cusName: string;
   cusRemark: string;
 }
+
 export interface PolicyListRes {
   data: PolicyRecord[];
   count: number;
@@ -34,6 +35,12 @@ export function queryManufcList(params: Params) {
   params.searchParams = `{ "CusName": "${params.searchParams}" }`;
   return axios.get('/scan/manager', {
     params,
+  });
+}
+
+export function deleteManufc(cusName: string) {
+  return axios.delete('/scan/manager', {
+    data: `{ "CusName": "${cusName}" }`,
   });
 }
 
@@ -63,4 +70,13 @@ export function queryTheServiceList() {
 
 export function queryRulesPresetList() {
   return axios.get('/api/list/rules-preset');
+}
+
+export interface domainParams {
+  CusName: string;
+  Domain: string;
+}
+
+export function addDomain(params: domainParams) {
+  return axios.post('/scan/domain', params);
 }

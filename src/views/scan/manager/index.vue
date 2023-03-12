@@ -132,12 +132,13 @@
         <template #index="{ rowIndex }">
           {{ rowIndex + 1 + (pagination.page - 1) * pagination.limit }}
         </template>
-        <template #operations>
+        <template #operations="{ record }">
           <a-button
             type="text"
             size="small"
             :shape="'square'"
             :status="'normal'"
+            @click="handleAssetsClick(record)"
           >
             添加资产
           </a-button>
@@ -146,6 +147,7 @@
             :shape="'square'"
             size="small"
             :status="'danger'"
+            @click="delManufc(record.cus_name)"
           >
             删除
           </a-button>
@@ -154,7 +156,7 @@
     </a-card>
     <a-modal
       v-model:visible="visible"
-      title="Modal Form"
+      title="添加厂商"
       @cancel="handleCancel"
       @before-ok="handleBeforeOk"
     >
@@ -164,6 +166,18 @@
         </a-form-item>
         <a-form-item field="post" label="厂商备注">
           <a-textarea v-model="form.cusRemark" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
+    <a-modal
+      v-model:visible="asvisible"
+      title="添加资产"
+      @cancel="handleAssetsCancel"
+      @before-ok="handleAssetsBeforeOk"
+    >
+      <a-form :model="assetsform">
+        <a-form-item field="post" label="域名列表">
+          <a-textarea v-model="assetsform.Domain" />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -179,6 +193,9 @@
     PolicyRecord,
     Params,
     addManufc,
+    addDomain,
+    domainParams,
+    deleteManufc,
   } from '@/api/manager';
   import { Pagination } from '@/types/global';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
@@ -195,10 +212,35 @@
     cusRemark: '',
   });
 
+  const asvisible = ref(false);
+  const assetsform: domainParams = reactive({
+    CusName: '',
+    Domain: '',
+  });
+
   const addManager = async () => {
     try {
       await addManufc(form);
       Message.success('添加成功');
+    } catch (e: any) {
+      Message.error(e.message);
+    }
+  };
+
+  const addManufcDomain = async () => {
+    try {
+      await addDomain(assetsform);
+      Message.success('添加成功');
+    } catch (e: any) {
+      Message.error(e.message);
+    }
+  };
+
+  const delManufc = async (cusName: string) => {
+    try {
+      await deleteManufc(cusName);
+      Message.success('删除成功');
+      fetchData();
     } catch (e: any) {
       Message.error(e.message);
     }
@@ -209,15 +251,41 @@
   };
   const handleBeforeOk = (done: any) => {
     window.setTimeout(() => {
-      addManufc(form);
+      addManager();
       fetchData();
+      clearForm();
       done();
-      // prevent close
-      // done(false)
     }, 300);
+  };
+  const handleAssetsCancel = () => {
+    visible.value = false;
+    clearAssertsForm();
+  };
+
+  const handleAssetsClick = (record: any) => {
+    assetsform.CusName = record.cus_name;
+    asvisible.value = true;
+  };
+  const handleAssetsBeforeOk = (done: any) => {
+    window.setTimeout(() => {
+      addManufcDomain();
+      fetchData();
+      clearAssertsForm();
+      done();
+    }, 300);
+  };
+  const clearAssertsForm = () => {
+    assetsform.CusName = '';
+    assetsform.Domain = '';
+  };
+
+  const clearForm = () => {
+    form.cusName = '';
+    form.cusRemark = '';
   };
   const handleCancel = () => {
     visible.value = false;
+    clearForm();
   };
 
   const generateFormModel = () => {
