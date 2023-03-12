@@ -128,13 +128,15 @@
             {{ $t('searchTable.operation.download') }}
           </a-button>
           <a-tooltip :content="$t('searchTable.actions.refresh')">
-            <div class="action-icon" @click="search"
-              ><icon-refresh size="18"
-            /></div>
+            <div class="action-icon" @click="search">
+              <icon-refresh size="18" />
+            </div>
           </a-tooltip>
           <a-dropdown @select="handleSelectDensity">
             <a-tooltip :content="$t('searchTable.actions.density')">
-              <div class="action-icon"><icon-line-height size="18" /></div>
+              <div class="action-icon">
+                <icon-line-height size="18" />
+              </div>
             </a-tooltip>
             <template #content>
               <a-doption
@@ -153,7 +155,9 @@
               position="bl"
               @popup-visible-change="popupVisibleChange"
             >
-              <div class="action-icon"><icon-settings size="18" /></div>
+              <div class="action-icon">
+                <icon-settings size="18" />
+              </div>
               <template #content>
                 <div id="tableSetting">
                   <div
@@ -167,7 +171,9 @@
                     <div>
                       <a-checkbox
                         v-model="item.checked"
-                        @change="handleChange($event, item as TableColumnData, index)"
+                        @change="
+                          handleChange($event, item as TableColumnData, index)
+                        "
                       >
                       </a-checkbox>
                     </div>
@@ -192,7 +198,7 @@
         @page-change="onPageChange"
       >
         <template #index="{ rowIndex }">
-          {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
+          {{ rowIndex + 1 + (pagination.page - 1) * pagination.limit }}
         </template>
         <template #contentType="{ record }">
           <a-space>
@@ -247,7 +253,7 @@
   import { computed, ref, reactive, watch, nextTick } from 'vue';
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
-  import { queryPolicyList, PolicyRecord, PolicyParams } from '@/api/list';
+  import { queryManufcList, PolicyRecord, Params } from '@/api/manager';
   import { Pagination } from '@/types/global';
   import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
@@ -277,8 +283,8 @@
   const size = ref<SizeProps>('medium');
 
   const basePagination: Pagination = {
-    current: 1,
-    pageSize: 20,
+    page: 1,
+    limit: 20,
   };
   const pagination = reactive({
     ...basePagination,
@@ -378,14 +384,14 @@
     },
   ]);
   const fetchData = async (
-    params: PolicyParams = { current: 1, pageSize: 20 }
+    params: Params = { page: 1, limit: 20, searchParams: '' }
   ) => {
     setLoading(true);
     try {
-      const { data } = await queryPolicyList(params);
-      renderData.value = data.list;
-      pagination.current = params.current;
-      pagination.total = data.total;
+      const { data } = await queryManufcList(params);
+      renderData.value = data.data;
+      pagination.page = params.page;
+      pagination.total = data.count;
     } catch (err) {
       // you can report use errorHandler or other
     } finally {
@@ -397,10 +403,10 @@
     fetchData({
       ...basePagination,
       ...formModel.value,
-    } as unknown as PolicyParams);
+    } as unknown as Params);
   };
   const onPageChange = (current: number) => {
-    fetchData({ ...basePagination, current });
+    fetchData({ ...basePagination, page: current });
   };
 
   fetchData();
@@ -485,6 +491,7 @@
   .container {
     padding: 0 20px 20px 20px;
   }
+
   :deep(.arco-table-th) {
     &:last-child {
       .arco-table-th-item-title {
@@ -492,18 +499,22 @@
       }
     }
   }
+
   .action-icon {
     margin-left: 12px;
     cursor: pointer;
   }
+
   .active {
     color: #0960bd;
     background-color: #e3f4fc;
   }
+
   .setting {
     display: flex;
     align-items: center;
     width: 200px;
+
     .title {
       margin-left: 12px;
       cursor: pointer;

@@ -1,35 +1,44 @@
-import axios from 'axios';
 import qs from 'query-string';
 import type { DescData } from '@arco-design/web-vue/es/descriptions/interface';
+import axios from 'axios';
 
 export interface PolicyRecord {
   id: string;
-  number: number;
   name: string;
-  contentType: 'img' | 'horizontalVideo' | 'verticalVideo';
-  filterType: 'artificial' | 'rules';
-  count: number;
-  status: 'online' | 'offline';
-  createdTime: string;
+  cus_name: string;
+  cus_subdomain_num: number;
+  cus_web_num: number;
+  cus_port_num: number;
+  cus_vul_num: number;
+  cus_time: string;
 }
 
-export interface PolicyParams extends Partial<PolicyRecord> {
-  current: number;
-  pageSize: number;
+export interface Params extends Partial<PolicyRecord> {
+  page: number;
+  limit: number;
+  searchParams?: string;
 }
 
+export interface AddParams {
+  cusName: string;
+  cusRemark: string;
+}
 export interface PolicyListRes {
-  list: PolicyRecord[];
-  total: number;
+  data: PolicyRecord[];
+  count: number;
+  code: number;
+  msg: string;
 }
 
-export function queryPolicyList(params: PolicyParams) {
-  return axios.get<PolicyListRes>('/api/list/policy', {
+export function queryManufcList(params: Params) {
+  params.searchParams = `{ "CusName": "${params.searchParams}" }`;
+  return axios.get('/scan/manager', {
     params,
-    paramsSerializer: (obj) => {
-      return qs.stringify(obj);
-    },
   });
+}
+
+export function addManufc(params: AddParams) {
+  return axios.post('/scan/manager', params);
 }
 
 export interface ServiceRecord {
@@ -43,6 +52,7 @@ export interface ServiceRecord {
   enable?: boolean;
   expires?: boolean;
 }
+
 export function queryInspectionList() {
   return axios.get('/api/list/quality-inspection');
 }
