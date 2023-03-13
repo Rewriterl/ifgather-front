@@ -92,7 +92,7 @@
 
   const visible = ref(false);
   const form = reactive({
-    cusName: '',
+    username: '',
     cusRemark: '',
   });
 
