@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <Breadcrumb :items="['menu.scan', 'scan.manager.searchTable']" />
-    <a-card class="general-card" :title="$t('menu.list.searchTable')">
+    <a-card class="general-card" :title="$t('menu.list.searchManagerTable')">
       <a-row>
         <a-col :flex="1">
           <a-form
@@ -25,7 +25,7 @@
             </a-row>
           </a-form>
         </a-col>
-        <a-divider style="height: 84px" direction="vertical" />
+        <a-divider style="height: 44px" direction="vertical" />
         <a-col :flex="'86px'" style="text-align: right">
           <a-space direction="horizontal" :size="18">
             <a-button type="primary" @click="search">
@@ -182,6 +182,9 @@
       </a-form>
     </a-modal>
   </div>
+  <div>
+    <DomainSearch />
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -202,6 +205,7 @@
   import cloneDeep from 'lodash/cloneDeep';
   import Sortable from 'sortablejs';
   import { Message } from '@arco-design/web-vue';
+  import DomainSearch from '@/views/scan/manager/domainSearch/index.vue';
 
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
   type Column = TableColumnData & { checked?: true };

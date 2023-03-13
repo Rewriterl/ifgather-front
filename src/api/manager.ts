@@ -38,6 +38,12 @@ export function queryManufcList(params: Params) {
   });
 }
 
+export function queryManufcDomainList(params: Params) {
+  return axios.get('/scan/domain', {
+    params,
+  });
+}
+
 export function deleteManufc(cusName: string) {
   return axios.delete('/scan/manager', {
     data: `{ "CusName": "${cusName}" }`,
