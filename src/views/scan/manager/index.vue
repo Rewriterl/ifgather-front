@@ -153,36 +153,35 @@
           </a-button>
         </template>
       </a-table>
+      <a-modal
+        v-model:visible="visible"
+        title="添加厂商"
+        @cancel="handleCancel"
+        @before-ok="handleBeforeOk"
+      >
+        <a-form :model="form">
+          <a-form-item field="name" label="厂商名">
+            <a-input v-model="form.cusName" />
+          </a-form-item>
+          <a-form-item field="post" label="厂商备注">
+            <a-textarea v-model="form.cusRemark" />
+          </a-form-item>
+        </a-form>
+      </a-modal>
+      <a-modal
+        v-model:visible="asvisible"
+        title="添加资产"
+        @cancel="handleAssetsCancel"
+        @before-ok="handleAssetsBeforeOk"
+      >
+        <a-form :model="assetsform">
+          <a-form-item field="post" label="域名列表">
+            <a-textarea v-model="assetsform.Domain" />
+          </a-form-item>
+        </a-form>
+      </a-modal>
     </a-card>
-    <a-modal
-      v-model:visible="visible"
-      title="添加厂商"
-      @cancel="handleCancel"
-      @before-ok="handleBeforeOk"
-    >
-      <a-form :model="form">
-        <a-form-item field="name" label="厂商名">
-          <a-input v-model="form.cusName" />
-        </a-form-item>
-        <a-form-item field="post" label="厂商备注">
-          <a-textarea v-model="form.cusRemark" />
-        </a-form-item>
-      </a-form>
-    </a-modal>
-    <a-modal
-      v-model:visible="asvisible"
-      title="添加资产"
-      @cancel="handleAssetsCancel"
-      @before-ok="handleAssetsBeforeOk"
-    >
-      <a-form :model="assetsform">
-        <a-form-item field="post" label="域名列表">
-          <a-textarea v-model="assetsform.Domain" />
-        </a-form-item>
-      </a-form>
-    </a-modal>
-  </div>
-  <div>
+    <a-divider style="margin-top: 0" />
     <DomainSearch />
   </div>
 </template>
@@ -244,7 +243,7 @@
     try {
       await deleteManufc(cusName);
       Message.success('删除成功');
-      fetchData();
+      await fetchData();
     } catch (e: any) {
       Message.error(e.message);
     }

@@ -44,6 +44,7 @@ export default {
   'searchTable.columns.count': '内容量',
   'searchTable.columns.createdTime': '创建时间',
   'searchTable.columns.status': '状态',
+  'searchTable.columns.subdomain': '子域名',
   'searchTable.columns.operations': '操作',
   'searchTable.columns.operations.view': '查看',
 
