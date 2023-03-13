@@ -13,11 +13,21 @@ const LOG: AppRouteRecordRaw = {
   },
   children: [
     {
-      path: 'managerL',
-      name: 'ManagerL',
-      component: () => import('@/views/log/index.vue'),
+      path: 'login',
+      name: 'LoginLog',
+      component: () => import('@/views/log/login/index.vue'),
       meta: {
-        locale: 'menu.log.manager',
+        locale: 'menu.log.login',
+        requiresAuth: true,
+        roles: ['admin'],
+      },
+    },
+    {
+      path: 'operation',
+      name: 'Operation',
+      component: () => import('@/views/log/operation/index.vue'),
+      meta: {
+        locale: 'menu.log.operation',
         requiresAuth: true,
         roles: ['admin'],
       },

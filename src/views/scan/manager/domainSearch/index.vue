@@ -134,7 +134,7 @@
 
   const basePagination: Pagination = {
     page: 1,
-    limit: 20,
+    limit: 10,
   };
   const pagination = reactive({
     ...basePagination,
@@ -174,7 +174,7 @@
     },
   ]);
   const fetchData = async (
-    params: Params = { page: 1, limit: 20, searchParams: '' }
+    params: Params = { page: 1, limit: 10, searchParams: '' }
   ) => {
     setLoading(true);
     try {

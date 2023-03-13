@@ -1,6 +1,8 @@
 export default {
   'menu.user.setting': 'User Setting',
   'menu.log.manager': 'Log Manager',
+  'menu.log.login': 'Login Log',
+  'menu.log.operation': 'Operation Log',
   'menu.infogather.portscan': 'Portscan',
   'menu.infogather.subdomain': 'Subdomain',
   'menu.infogather.webfingerprint': 'Web fingerprint',

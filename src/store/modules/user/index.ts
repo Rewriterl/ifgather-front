@@ -32,16 +32,12 @@ const useUserStore = defineStore('user', {
   },
 
   actions: {
-    switchRoles() {
-      return new Promise((resolve) => {
-        this.role = this.role === 'user' ? 'admin' : 'user';
-        resolve(this.role);
-      });
-    },
     // Set user's information
     setInfo(partial: Partial<UserState>) {
       this.$patch(partial);
-      this.userInfo.role = partial.username === 'admin' ? 'admin' : '';
+      this.role = partial.username === 'admin' ? 'admin' : '';
+      this.avatar =
+        'https://gcore.jsdelivr.net/gh/Rewriterl/cdn@0.1/avater.png';
     },
 
     // Reset user's information
@@ -60,6 +56,7 @@ const useUserStore = defineStore('user', {
     async login(loginForm: LoginData) {
       try {
         await userLogin(loginForm);
+        await this.info();
         // setToken(res.data.token);
       } catch (err) {
         console.log(err);

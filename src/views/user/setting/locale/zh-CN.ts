@@ -1,6 +1,8 @@
 export default {
   'menu.user.setting': '用户设置',
   'menu.log.manager': '日志管理',
+  'menu.log.login': '登录日志',
+  'menu.log.operation': '操作日志',
   'menu.infogather.portscan': '端口扫描',
   'menu.infogather.subdomain': '子域名扫描',
   'menu.infogather.webfingerprint': '网站指纹识别',

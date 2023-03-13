@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <Breadcrumb :items="['menu.scan', 'scan.manager.searchTable']" />
-    <a-card class="general-card" :title="$t('menu.list.searchManagerTable')">
+    <a-card class="general-card" :title="$t('menu.list.searchTable')">
       <a-row>
         <a-col :flex="1">
           <a-form
@@ -14,11 +14,22 @@
               <a-col :span="12">
                 <a-form-item
                   field="searchParams"
-                  :label="$t('searchTable.scan.name')"
+                  :label="$t('searchTable.columns.username')"
                 >
                   <a-input
-                    v-model="formModel.searchParams"
-                    :placeholder="$t('searchTable.scan.name.placeholder')"
+                    v-model="formModel.searchParams.username"
+                    :placeholder="$t('searchTable.username.placeholder')"
+                  />
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-item
+                  field="searchParams"
+                  :label="$t('searchTable.columns.ip')"
+                >
+                  <a-input
+                    v-model="formModel.searchParams.ip"
+                    :placeholder="$t('searchTable.columns.ip')"
                   />
                 </a-form-item>
               </a-col>
@@ -45,16 +56,7 @@
       </a-row>
       <a-divider style="margin-top: 0" />
       <a-row style="margin-bottom: 16px">
-        <a-col :span="12">
-          <a-space>
-            <a-button type="primary" @click="handleClick">
-              <template #icon>
-                <icon-plus />
-              </template>
-              {{ $t('searchTable.operation.create') }}
-            </a-button>
-          </a-space>
-        </a-col>
+        <a-col :span="12"> </a-col>
         <a-col
           :span="12"
           style="display: flex; align-items: center; justify-content: end"
@@ -129,60 +131,8 @@
         :size="size"
         @page-change="onPageChange"
       >
-        <template #index="{ rowIndex }">
-          {{ rowIndex + 1 + (pagination.page - 1) * pagination.limit }}
-        </template>
-        <template #operations="{ record }">
-          <a-button
-            type="text"
-            size="small"
-            :shape="'square'"
-            :status="'normal'"
-            @click="handleAssetsClick(record)"
-          >
-            添加资产
-          </a-button>
-          <a-button
-            type="text"
-            :shape="'square'"
-            size="small"
-            :status="'danger'"
-            @click="delManufc(record.cus_name)"
-          >
-            删除
-          </a-button>
-        </template>
       </a-table>
-      <a-modal
-        v-model:visible="visible"
-        title="添加厂商"
-        @cancel="handleCancel"
-        @before-ok="handleBeforeOk"
-      >
-        <a-form :model="form">
-          <a-form-item field="name" label="厂商名">
-            <a-input v-model="form.cusName" />
-          </a-form-item>
-          <a-form-item field="post" label="厂商备注">
-            <a-textarea v-model="form.cusRemark" />
-          </a-form-item>
-        </a-form>
-      </a-modal>
-      <a-modal
-        v-model:visible="asvisible"
-        title="添加资产"
-        @cancel="handleAssetsCancel"
-        @before-ok="handleAssetsBeforeOk"
-      >
-        <a-form :model="assetsform">
-          <a-form-item field="post" label="域名列表">
-            <a-textarea v-model="assetsform.Domain" />
-          </a-form-item>
-        </a-form>
-      </a-modal>
     </a-card>
-    <a-divider style="margin-top: 0" />
-    <DomainSearch />
   </div>
 </template>
 
@@ -190,115 +140,27 @@
   import { computed, ref, reactive, watch, nextTick } from 'vue';
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
-  import {
-    queryManufcList,
-    PolicyRecord,
-    Params,
-    addManufc,
-    addDomain,
-    domainParams,
-    deleteManufc,
-  } from '@/api/manager';
+  import { Params, LoginLogRecord } from '@/api/manager';
   import { Pagination } from '@/types/global';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import cloneDeep from 'lodash/cloneDeep';
   import Sortable from 'sortablejs';
-  import { Message } from '@arco-design/web-vue';
-  import DomainSearch from '@/views/scan/manager/domainSearch/index.vue';
+  import { getLoginLogs } from '@/api/log';
 
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
   type Column = TableColumnData & { checked?: true };
 
-  const visible = ref(false);
-  const form = reactive({
-    cusName: '',
-    cusRemark: '',
-  });
-
-  const asvisible = ref(false);
-  const assetsform: domainParams = reactive({
-    CusName: '',
-    Domain: '',
-  });
-
-  const addManager = async () => {
-    try {
-      await addManufc(form);
-      Message.success('添加成功');
-    } catch (e: any) {
-      Message.error(e.message);
-    }
-  };
-
-  const addManufcDomain = async () => {
-    try {
-      await addDomain(assetsform);
-      Message.success('添加成功');
-    } catch (e: any) {
-      Message.error(e.message);
-    }
-  };
-
-  const delManufc = async (cusName: string) => {
-    try {
-      await deleteManufc(cusName);
-      Message.success('删除成功');
-      await fetchData();
-    } catch (e: any) {
-      Message.error(e.message);
-    }
-  };
-
-  const handleClick = () => {
-    visible.value = true;
-  };
-  const handleBeforeOk = (done: any) => {
-    window.setTimeout(() => {
-      addManager();
-      fetchData();
-      clearForm();
-      done();
-    }, 300);
-  };
-  const handleAssetsCancel = () => {
-    visible.value = false;
-    clearAssertsForm();
-  };
-
-  const handleAssetsClick = (record: any) => {
-    assetsform.CusName = record.cus_name;
-    asvisible.value = true;
-  };
-  const handleAssetsBeforeOk = (done: any) => {
-    window.setTimeout(() => {
-      addManufcDomain();
-      fetchData();
-      clearAssertsForm();
-      done();
-    }, 300);
-  };
-  const clearAssertsForm = () => {
-    assetsform.CusName = '';
-    assetsform.Domain = '';
-  };
-
-  const clearForm = () => {
-    form.cusName = '';
-    form.cusRemark = '';
-  };
-  const handleCancel = () => {
-    visible.value = false;
-    clearForm();
-  };
-
   const generateFormModel = () => {
     return {
-      searchParams: '',
+      searchParams: {
+        username: '',
+        ip: '',
+      },
     };
   };
   const { loading, setLoading } = useLoading(true);
   const { t } = useI18n();
-  const renderData = ref<PolicyRecord[]>([]);
+  const renderData = ref<LoginLogRecord[]>([]);
   const formModel = ref(generateFormModel());
   const cloneColumns = ref<Column[]>([]);
   const showColumns = ref<Column[]>([]);
@@ -332,43 +194,25 @@
   ]);
   const columns = computed<TableColumnData[]>(() => [
     {
-      title: t('searchTable.columns.index'),
-      dataIndex: 'index',
-      slotName: 'index',
-    },
-    {
-      title: t('searchTable.columns.number'),
+      title: t('searchTable.columns.id'),
       dataIndex: 'id',
     },
     {
-      title: t('searchTable.columns.name'),
-      dataIndex: 'cus_name',
+      title: t('searchTable.columns.username'),
+      dataIndex: 'username',
     },
     {
-      title: t('searchTable.columns.subdomain'),
-      dataIndex: 'cus_subdomain_num',
-      slotName: 'cus_subdomain_num',
+      title: t('searchTable.columns.ip'),
+      dataIndex: 'ip',
+      slotName: 'ip',
     },
     {
-      title: t('searchTable.columns.port'),
-      dataIndex: 'cus_port_num',
-    },
-    {
-      title: t('searchTable.columns.web'),
-      dataIndex: 'cus_web_num',
-    },
-    {
-      title: t('searchTable.columns.vul'),
-      dataIndex: 'cus_vul_num',
+      title: t('searchTable.columns.agent'),
+      dataIndex: 'user_agent',
     },
     {
       title: t('searchTable.columns.createdTime'),
-      dataIndex: 'cus_time',
-    },
-    {
-      title: t('searchTable.columns.operations'),
-      dataIndex: 'operations',
-      slotName: 'operations',
+      dataIndex: 'create_at',
     },
   ]);
   const fetchData = async (
@@ -376,7 +220,7 @@
   ) => {
     setLoading(true);
     try {
-      const data: any = await queryManufcList(params);
+      const data: any = await getLoginLogs(params);
       renderData.value = data.data;
       pagination.page = params.page;
       pagination.total = data.count;
@@ -388,9 +232,10 @@
   };
 
   const search = () => {
+    const searchParams = JSON.stringify(formModel.value.searchParams);
     fetchData({
       ...basePagination,
-      ...formModel.value,
+      searchParams,
     } as unknown as Params);
   };
   const onPageChange = (page: number) => {
@@ -471,7 +316,7 @@
 
 <script lang="ts">
   export default {
-    name: 'Manufacturer',
+    name: 'LoginLog',
   };
 </script>
 

@@ -1,4 +1,3 @@
-import qs from 'query-string';
 import type { DescData } from '@arco-design/web-vue/es/descriptions/interface';
 import axios from 'axios';
 
@@ -11,6 +10,14 @@ export interface PolicyRecord {
   cus_port_num: number;
   cus_vul_num: number;
   cus_time: string;
+}
+
+export interface LoginLogRecord {
+  id: string;
+  username: string;
+  ip: string;
+  create_at: string;
+  user_agent: string;
 }
 
 export interface Params extends Partial<PolicyRecord> {
