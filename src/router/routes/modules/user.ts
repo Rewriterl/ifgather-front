@@ -7,9 +7,9 @@ const USER: AppRouteRecordRaw = {
   component: DEFAULT_LAYOUT,
   meta: {
     locale: 'menu.user',
-    icon: 'icon-user',
+    icon: 'icon-idcard',
     requiresAuth: true,
-    order: 7,
+    order: 5,
   },
   children: [
     // {

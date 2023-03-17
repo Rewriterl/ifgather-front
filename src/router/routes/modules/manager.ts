@@ -7,13 +7,13 @@ const MANAGER: AppRouteRecordRaw = {
   component: DEFAULT_LAYOUT,
   meta: {
     locale: 'menu.scan',
-    icon: 'icon-user',
+    icon: 'icon-storage',
     requiresAuth: true,
-    order: 7,
+    order: 2,
   },
   children: [
     {
-      path: 'managerC',
+      path: 'manufacturer',
       name: 'ManagerC',
       component: () => import('@/views/scan/manager/index.vue'),
       meta: {
@@ -23,7 +23,7 @@ const MANAGER: AppRouteRecordRaw = {
       },
     },
     {
-      path: 'subdomainM',
+      path: 'subdomain',
       name: 'SubdomainM',
       component: () => import('@/views/scan/subdomain/index.vue'),
       meta: {

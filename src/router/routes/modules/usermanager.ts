@@ -9,11 +9,11 @@ const USERMANAGER: AppRouteRecordRaw = {
     locale: 'menu.usermanager',
     icon: 'icon-user',
     requiresAuth: true,
-    order: 7,
+    order: 4,
   },
   children: [
     {
-      path: 'managerU',
+      path: 'user',
       name: 'ManagerU',
       component: () => import('@/views/usermanager/index.vue'),
       meta: {

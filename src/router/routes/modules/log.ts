@@ -7,9 +7,9 @@ const LOG: AppRouteRecordRaw = {
   component: DEFAULT_LAYOUT,
   meta: {
     locale: 'menu.log',
-    icon: 'icon-user',
+    icon: 'icon-book',
     requiresAuth: true,
-    order: 7,
+    order: 3,
   },
   children: [
     {

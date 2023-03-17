@@ -23,15 +23,15 @@
       <Menu v-if="topMenu" />
     </div>
     <ul class="right-side">
-      <li>
-        <a-tooltip :content="$t('settings.search')">
-          <a-button class="nav-btn" type="outline" :shape="'circle'">
-            <template #icon>
-              <icon-search />
-            </template>
-          </a-button>
-        </a-tooltip>
-      </li>
+      <!--      <li>-->
+      <!--        <a-tooltip :content="$t('settings.search')">-->
+      <!--          <a-button class="nav-btn" type="outline" :shape="'circle'">-->
+      <!--            <template #icon>-->
+      <!--              <icon-search />-->
+      <!--            </template>-->
+      <!--          </a-button>-->
+      <!--        </a-tooltip>-->
+      <!--      </li>-->
       <li>
         <a-tooltip :content="$t('settings.language')">
           <a-button
@@ -126,14 +126,14 @@
             <img alt="avatar" :src="avatar" />
           </a-avatar>
           <template #content>
-            <a-doption>
-              <a-space @click="$router.push({ name: 'Info' })">
-                <icon-user />
-                <span>
-                  {{ $t('messageBox.userCenter') }}
-                </span>
-              </a-space>
-            </a-doption>
+            <!--            <a-doption>-->
+            <!--              <a-space @click="$router.push({ name: 'Info' })">-->
+            <!--                <icon-user />-->
+            <!--                <span>-->
+            <!--                  {{ $t('messageBox.userCenter') }}-->
+            <!--                </span>-->
+            <!--              </a-space>-->
+            <!--            </a-doption>-->
             <a-doption>
               <a-space @click="$router.push({ name: 'Setting' })">
                 <icon-settings />

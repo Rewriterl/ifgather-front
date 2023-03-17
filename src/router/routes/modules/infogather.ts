@@ -7,9 +7,9 @@ const INFOGATHER: AppRouteRecordRaw = {
   component: DEFAULT_LAYOUT,
   meta: {
     locale: 'menu.infogather',
-    icon: 'icon-user',
+    icon: 'icon-computer',
     requiresAuth: true,
-    order: 7,
+    order: 1,
   },
   children: [
     {
