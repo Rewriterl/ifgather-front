@@ -4,6 +4,7 @@ export default {
   'menu.list.searchDomainTable': '域名探测任务',
   'menu.scan.searchTable': '查询厂商',
   'scan.manager.searchTable': '厂商管理',
+  'scan.manager.engine': '扫描引擎管理',
   'searchTable.form.number': '集合编号',
   'searchTable.form.number.placeholder': '请输入集合编号',
   'searchTable.form.name': '集合名称',

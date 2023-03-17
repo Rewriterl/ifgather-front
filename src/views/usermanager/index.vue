@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.scan', 'scan.manager.searchTable']" />
+    <Breadcrumb :items="['menu.usermanager', 'menu.usermanager']" />
     <a-card class="general-card" :title="$t('menu.list.searchTable')">
       <a-row>
         <a-col :flex="1">

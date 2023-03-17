@@ -4,6 +4,8 @@ export default {
   'menu.list.searchDomainTable': 'Domain name detection task',
   'menu.scan.searchTable': 'Search Manufacturer',
   'scan.manager.searchTable': 'Manufacturer management',
+  'scan.manager.webinfo': 'Web page information management',
+  'scan.manager.engine': 'Scan Engine Configuration',
   'searchTable.form.number': 'Set Number',
   'searchTable.form.number.placeholder': 'Please enter Set Number',
   'searchTable.form.name': 'Set Name',
