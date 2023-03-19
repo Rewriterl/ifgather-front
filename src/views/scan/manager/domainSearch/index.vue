@@ -110,11 +110,6 @@
     assetsform.Domain = '';
   };
 
-  const clearForm = () => {
-    form.cusName = '';
-    form.cusRemark = '';
-  };
-
   const generateFormModel = () => {
     return {
       searchParams: {
