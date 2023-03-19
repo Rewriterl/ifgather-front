@@ -2,6 +2,12 @@
   <div class="container">
     <Breadcrumb :items="['menu.scan', 'menu.scan.engine']" />
     <a-card class="general-card" :title="$t('scan.manager.engine')">
+      <a-alert type="normal">
+        <template #icon>
+          <icon-exclamation-circle-fill />
+        </template>
+        该页面可以配置客户端端运行所需参数，用于动态下发配置信息，请认真填写！
+      </a-alert>
       <a-tabs default-active-key="1">
         <a-tab-pane key="1" title="消息队列">
           <a-form
@@ -34,10 +40,7 @@
               label="配置更新时间"
               tooltip="Client端多久更新一次配置信息,单位分钟"
             >
-              <a-input
-                v-model="state.nsq.time"
-                placeholder="please enter your post..."
-              />
+              <a-input-number v-model="state.nsq.time" />
             </a-form-item>
             <a-form-item>
               <a-button html-type="submit" :status="'normal'">保存</a-button>
@@ -55,30 +58,21 @@
               tooltip="80(单端口)、21,22,23(指定多个端口)、1-100(端口范围)、top100(内置top100端口)、top1000(内置top1000端口)、full(全部端口)"
               label="端口"
             >
-              <a-input
-                v-model="state.portscan.ports"
-                placeholder="please enter your username..."
-              />
+              <a-input v-model="state.portscan.ports" />
             </a-form-item>
             <a-form-item
               field="nsqd_http"
               label="扫描速率"
               tooltip="扫描速率过大会导致扫描结果不全,外网扫描建议不超过2000"
             >
-              <a-input
-                v-model="state.portscan.rate"
-                placeholder="please enter your post..."
-              />
+              <a-input-number v-model="state.portscan.rate" />
             </a-form-item>
             <a-form-item
               field="time"
               label="探测超时"
               tooltip="Client端多久更新一次配置信息,单位分钟"
             >
-              <a-input
-                v-model="state.portscan.timeout"
-                placeholder="please enter your post..."
-              />
+              <a-input-number v-model="state.portscan.timeout" />
             </a-form-item>
             <a-form-item field="ping" label="存活探测">
               <a-switch v-model="state.portscan.ping">
@@ -98,21 +92,21 @@
               label="指纹超时"
               tooltip="指纹识别超时默认为7s"
             >
-              <a-input v-model="state.portscan.nmap_timeout" />
+              <a-input-number v-model="state.portscan.nmap_timeout" />
             </a-form-item>
             <a-form-item
               field="waf_num"
               label="WAF过滤"
               tooltip="默认单个主机超过50个端口开放则判定为waf，不继续探测"
             >
-              <a-input v-model="state.portscan.waf_num" />
+              <a-input-number v-model="state.portscan.waf_num" />
             </a-form-item>
             <a-form-item
               field="retries"
               label="重试次数"
               tooltip="若超时则重新探测"
             >
-              <a-input v-model="state.portscan.retries" />
+              <a-input-number v-model="state.portscan.retries" />
             </a-form-item>
             <a-form-item field="verify" label="二次验证">
               <a-switch v-model="state.portscan.verify">
@@ -125,7 +119,7 @@
               label="消息队列超时"
               tooltip="返回给消息队列服务器超时时间,如果在规定时间内未扫描完则消息回退，一般全端口扫描不超时10分钟"
             >
-              <a-input v-model="state.portscan.nsq_timeout" />
+              <a-input-number v-model="state.portscan.nsq_timeout" />
             </a-form-item>
             <a-form-item>
               <a-button html-type="submit" :status="'normal'">保存</a-button>
@@ -143,21 +137,21 @@
               tooltip="被动搜索子域名超时时间,如使用baidu搜索子域名单个模块的超时时间,单位秒"
               label="模块超时"
             >
-              <a-input v-model="state.domain.timeout" />
+              <a-input-number v-model="state.domain.timeout" />
             </a-form-item>
             <a-form-item
               field="max_enum_time"
               label="搜索超时"
               tooltip="被动搜索子域名所有模块整体超时时间,单位分钟,若量大,则设置长一点"
             >
-              <a-input v-model="state.domain.max_enum_time" />
+              <a-input-number v-model="state.domain.max_enum_time" />
             </a-form-item>
             <a-form-item
               field="nsq_timeout"
               label="消息队列超时"
               tooltip="返回给消息队列服务器超时时间,如果在规定时间内未扫描完则消息回退,单位秒"
             >
-              <a-input v-model="state.domain.nsq_timeout" />
+              <a-input-number v-model="state.domain.nsq_timeout" />
             </a-form-item>
             <a-form-item>
               <a-button html-type="submit" :status="'normal'">保存</a-button>
@@ -263,28 +257,28 @@
               tooltip="用于web指纹识别超时时间:单位秒"
               label="指纹识别超时"
             >
-              <a-input v-model="state.webinfo.wappalyzertimeout" />
+              <a-input-number v-model="state.webinfo.wappalyzertimeout" />
             </a-form-item>
             <a-form-item
               field="spidertimeout"
               tooltip="用于web主动爬虫超时时间:单位秒"
               label="主动爬虫超时"
             >
-              <a-input v-model="state.webinfo.spidertimeout" />
+              <a-input-number v-model="state.webinfo.spidertimeout" />
             </a-form-item>
             <a-form-item
               field="maxdepth"
               tooltip="用于主动爬虫爬取的深度:默认为1,越大时间越久"
               label="主动爬虫深度"
             >
-              <a-input v-model="state.webinfo.maxdepth" />
+              <a-input-number v-model="state.webinfo.maxdepth" />
             </a-form-item>
             <a-form-item
               field="concurrent"
               tooltip="用于主动爬虫并发数,过大可能会导致WAF拦截"
               label="爬虫并发数"
             >
-              <a-input v-model="state.webinfo.concurrent" />
+              <a-input-number v-model="state.webinfo.concurrent" />
             </a-form-item>
             <a-form-item>
               <a-button html-type="submit" :status="'normal'">保存</a-button>
@@ -292,7 +286,11 @@
           </a-form>
         </a-tab-pane>
         <a-tab-pane key="6" title="任务详情">
-          Content of Tab Panel 2
+          <a-card class="general-card">
+            <TaskDetail :nsq-info="taskState.domainRenderData" />
+            <TaskDetail :nsq-info="taskState.portScanRenderData" />
+            <TaskDetail :nsq-info="taskState.webinfoRenderData" />
+          </a-card>
         </a-tab-pane>
       </a-tabs>
     </a-card>
@@ -300,11 +298,13 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref } from 'vue';
+  import { reactive } from 'vue';
   import useLoading from '@/hooks/loading';
   import {
     ClientConfig,
     getClientConfig,
+    getNsqInfo,
+    NsqInfo,
     setApikey,
     setDomain,
     setNsq,
@@ -312,6 +312,7 @@
     setWebinfo,
   } from '@/api/engine';
   import { Message } from '@arco-design/web-vue';
+  import TaskDetail from './taskDetail/index.vue';
 
   const { loading, setLoading } = useLoading(true);
 
@@ -361,6 +362,11 @@
   };
 
   const state = reactive(formConfig);
+  const taskState = reactive({
+    domainRenderData: {} as NsqInfo,
+    portScanRenderData: {} as NsqInfo,
+    webinfoRenderData: {} as NsqInfo,
+  });
 
   const fetchData = async () => {
     setLoading(true);
@@ -373,8 +379,6 @@
       state.domain = formConfig.domain;
       state.portscan = formConfig.portscan;
       state.webinfo = formConfig.webinfo;
-    } catch (err) {
-      // you can report use errorHandler or other
     } finally {
       setLoading(false);
     }
@@ -435,6 +439,34 @@
       setLoading(false);
     }
   };
+  const fetchDomainNsqInfo = async () => {
+    setLoading(true);
+    try {
+      taskState.domainRenderData = await getNsqInfo('subdomain');
+    } finally {
+      setLoading(false);
+    }
+  };
+  const fetchPortScanNsqInfo = async () => {
+    setLoading(true);
+    try {
+      const data: any = await getNsqInfo('portscan');
+      taskState.portScanRenderData = data as NsqInfo;
+    } finally {
+      setLoading(false);
+    }
+  };
+  const fetchWebinfoNsqInfo = async () => {
+    setLoading(true);
+    try {
+      taskState.webinfoRenderData = await getNsqInfo('webinfo');
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchWebinfoNsqInfo();
+  fetchPortScanNsqInfo();
+  fetchDomainNsqInfo();
 </script>
 
 <style scoped lang="less">

@@ -100,6 +100,25 @@ interface ApiKeyEngineWebInfoReq {
   concurrent: number;
 }
 
+interface NsqResInfos {
+  hostname: string;
+  remote_address: string;
+  message_count: number;
+  finish_count: number;
+  connect_ts: string;
+}
+
+export interface NsqInfo {
+  code: number;
+  msg: string;
+  count: number;
+  message_count: number;
+  message_bytes: string;
+  timeout_count: number;
+  client_count: number;
+  data: NsqResInfos[] | null;
+}
+
 export function getClientConfig(pwd: string) {
   return axios.get(`/scan/client/info?pwd=${pwd}`);
 }
@@ -163,4 +182,8 @@ export function setWebinfo(params: WebinfoConfig) {
     concurrent: params.concurrent,
   };
   return axios.post(`/scan/engine/webinfo`, reqParams);
+}
+
+export function getNsqInfo(resource: string) {
+  return axios.get(`/scan/engine/nsq/${resource}`);
 }
