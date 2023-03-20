@@ -187,3 +187,7 @@ export function setWebinfo(params: WebinfoConfig) {
 export function getNsqInfo(resource: string) {
   return axios.get(`/scan/engine/nsq/${resource}`);
 }
+
+export function emptyNsqInfo(resource: string) {
+  return axios.delete(`/scan/engine/empty${resource}`);
+}

@@ -287,9 +287,18 @@
         </a-tab-pane>
         <a-tab-pane key="6" title="任务详情">
           <a-card class="general-card">
-            <TaskDetail :nsq-info="taskState.domainRenderData" />
-            <TaskDetail :nsq-info="taskState.portScanRenderData" />
-            <TaskDetail :nsq-info="taskState.webinfoRenderData" />
+            <TaskDetail
+              :nsq-info="taskState.domainRenderData"
+              nsq-id="domain"
+            />
+            <TaskDetail
+              :nsq-info="taskState.portScanRenderData"
+              nsq-id="port"
+            />
+            <TaskDetail
+              :nsq-info="taskState.webinfoRenderData"
+              nsq-id="webinfo"
+            />
           </a-card>
         </a-tab-pane>
       </a-tabs>
@@ -314,7 +323,7 @@
   import { Message } from '@arco-design/web-vue';
   import TaskDetail from './taskDetail/index.vue';
 
-  const { loading, setLoading } = useLoading(true);
+  const { setLoading } = useLoading(true);
 
   let formConfig: ClientConfig = {
     nsq: {
