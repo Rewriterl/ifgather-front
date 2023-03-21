@@ -12,3 +12,21 @@ export function getPortScanTask(params: Params) {
     params,
   });
 }
+
+export function addPortScanTask(params: any) {
+  return axios.post('/collector/portscan', params);
+}
+
+export function delPortScanTask(param: any) {
+  return axios.delete(`/collector/portscan?CusName=${param}`);
+}
+
+export function delAllPortScanTask() {
+  return axios.delete('/collector/portscan/all');
+}
+
+export function getPortScanDetails(params: any) {
+  return axios.get('/collector/portscan/details', {
+    params,
+  });
+}

@@ -26,6 +26,10 @@ export interface Params extends Partial<PolicyRecord> {
   searchParams?: string;
 }
 
+export interface Param {
+  CusName: string;
+}
+
 export interface AddParams {
   cusName: string;
   cusRemark: string;

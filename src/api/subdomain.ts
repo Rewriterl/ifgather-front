@@ -18,9 +18,7 @@ export function addSubDomainTask(params: any) {
 }
 
 export function delSubDomainTask(params: any) {
-  return axios.delete('/collector/subdomain', {
-    params,
-  });
+  return axios.delete(`/collector/subdomain?CusName=${params}`);
 }
 
 export function delAllSubDomainTask() {

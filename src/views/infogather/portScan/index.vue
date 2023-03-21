@@ -45,15 +45,31 @@
       </a-row>
       <a-divider style="margin-top: 0" />
       <a-row style="margin-bottom: 16px">
-        <a-col :span="12"></a-col>
+        <a-col :span="12">
+          <a-space>
+            <a-button :type="'primary'" :status="'normal'" @click="handleClick">
+              <template #icon>
+                <icon-plus />
+              </template>
+              添加任务
+            </a-button>
+            <a-popconfirm
+              content="清空任务并不会终止正在进行的任务，如需清除推荐在任务完成后进行"
+              @ok="delAllTask()"
+            >
+              <a-button :status="'danger'">
+                <template #icon>
+                  <icon-delete />
+                </template>
+                清空任务
+              </a-button>
+            </a-popconfirm>
+          </a-space>
+        </a-col>
         <a-col
           :span="12"
           style="display: flex; align-items: center; justify-content: end"
         >
-          <a-tooltip>
-            <a-button :status="'normal'" :size="'mini'">添加任务</a-button>
-            <a-button :status="'danger'" :size="'mini'">清除任务</a-button>
-          </a-tooltip>
           <a-tooltip :content="$t('searchTable.actions.refresh')">
             <div class="action-icon" @click="search">
               <icon-refresh size="18" />
@@ -124,9 +140,126 @@
         :size="size"
         @page-change="onPageChange"
       >
+        <template #operations="{ record }">
+          <a-button
+            type="text"
+            size="small"
+            :shape="'square'"
+            :status="'normal'"
+            @click="handleDetailsClick(record.cus_name)"
+          >
+            查看详情
+          </a-button>
+          <a-popconfirm
+            :type="'warning'"
+            content="真删？"
+            @ok="delTask(record.cus_name)"
+          >
+            <a-button
+              type="text"
+              :shape="'square'"
+              size="small"
+              :status="'danger'"
+            >
+              删除
+            </a-button>
+          </a-popconfirm>
+        </template>
       </a-table>
+      <a-modal
+        v-model:visible="visible"
+        title="Modal Form"
+        @cancel="handleCancel"
+        @before-ok="handleBeforeOk"
+      >
+        <a-form :model="form">
+          <a-form-item
+            field="CusName"
+            label="任务名"
+            tooltip="若追加已有任务,请填写该任务名。如果有多个扫描任务同时运行，则不保证消息队列顺序(消息发送是随机的)"
+          >
+            <a-input v-model="form.CusName" />
+          </a-form-item>
+          <a-form-item
+            field="Hosts"
+            label="主机地址"
+            tooltip="可添加多行,支持CIDR格式,自动去重处理"
+          >
+            <a-textarea v-model="form.Hosts" />
+          </a-form-item>
+          <a-form-item
+            field="Ports"
+            label="端口"
+            tooltip="格式：80(单端口)、21,22,23(指定多个端口)、1-100(端口范围)、top100(内置top100端口)、top1000(内置top1000端口)、full(全部端口)"
+          >
+            <a-input v-model="form.Ports" />
+          </a-form-item>
+          <a-form-item
+            field="Rate"
+            label="扫描速率"
+            tooltip="扫描速率过大会导致扫描结果不全,外网扫描建议不超过2000"
+          >
+            <a-input-number v-model="form.Rate" />
+          </a-form-item>
+          <a-form-item field="Timeout" label="探测超时" tooltip="默认为10s">
+            <a-input-number v-model="form.Timeout" />
+          </a-form-item>
+          <a-form-item field="Ping" label="存活探测">
+            <a-switch v-model="form.Ping">
+              <template #checked> ON </template>
+              <template #unchecked> OFF </template>
+            </a-switch>
+          </a-form-item>
+          <a-form-item
+            field="Detection"
+            label="优先探测"
+            tooltip="对于禁ping扫描，会扫描所有主机(不管是否存活),会浪费大量时间，可使用优先探测top100或top1000端口进行存活扫描"
+          >
+            <a-input v-model="form.Detection" />
+          </a-form-item>
+          <a-form-item
+            field="NmapTimeout"
+            label="指纹超时"
+            tooltip="指纹识别超时默认为7s"
+          >
+            <a-input-number v-model="form.NmapTimeout" />
+          </a-form-item>
+          <a-form-item
+            field="WafNum"
+            label="WAF过滤"
+            tooltip="默认单个主机超过50个端口开放则判定为waf，不继续探测"
+          >
+            <a-input-number v-model="form.WafNum" />
+          </a-form-item>
+          <a-form-item
+            field="Retries"
+            label="重试次数"
+            tooltip="若超时则重新探测"
+          >
+            <a-input-number v-model="form.Retries" />
+          </a-form-item>
+          <a-form-item field="Verify" label="二次验证">
+            <a-switch v-model="form.Verify">
+              <template #checked> ON </template>
+              <template #unchecked> OFF </template>
+            </a-switch>
+          </a-form-item>
+        </a-form>
+      </a-modal>
       <a-split />
       <TaskDetail :nsq-info="portScanTask" nsq-id="port" />
+      <a-drawer
+        :width="'70%'"
+        :visible="drawerVisible"
+        :footer="false"
+        @cancel="handleDrawerCancel"
+        unmountOnClose
+      >
+        <template #header>
+          <span>子域名扫描详情</span>
+        </template>
+        <portscan-detail :taskname="taskname" />
+      </a-drawer>
     </a-card>
   </div>
 </template>
@@ -140,9 +273,16 @@
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import cloneDeep from 'lodash/cloneDeep';
   import Sortable from 'sortablejs';
-  import { getPortList, getPortScanTask } from '@/api/port';
+  import {
+    addPortScanTask,
+    delAllPortScanTask,
+    delPortScanTask,
+    getPortScanTask,
+  } from '@/api/port';
   import TaskDetail from '@/views/scan/engine/taskDetail/index.vue';
   import { getNsqInfo, NsqInfo } from '@/api/engine';
+  import { Message } from '@arco-design/web-vue';
+  import PortscanDetail from '@/views/infogather/portScan/portscanDetail/index.vue';
 
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
   type Column = TableColumnData & { checked?: true };
@@ -219,6 +359,11 @@
     {
       title: t('searchTable.columns.createdTime'),
       dataIndex: 'create_at',
+    },
+    {
+      title: t('searchTable.columns.operations'),
+      dataIndex: 'operations',
+      slotName: 'operations',
     },
   ]);
   const fetchData = async (
@@ -304,6 +449,96 @@
           },
         });
       });
+    }
+  };
+
+  const visible = ref(false);
+  const form = reactive({
+    CusName: '',
+    Hosts: '',
+    Verify: false,
+    Ping: false,
+    Retries: 1,
+    Rate: 1000,
+    Timeout: 1000,
+    Ports: 'top100',
+    NmapTimeout: 7,
+    WafNum: 50,
+    Detection: 'null',
+  });
+
+  const clearForm = () => {
+    form.CusName = '';
+    form.Hosts = '';
+    form.Verify = false;
+    form.Ping = false;
+    form.Retries = 1;
+    form.Rate = 1000;
+    form.Timeout = 1000;
+    form.Ports = 'top100';
+    form.NmapTimeout = 7;
+    form.WafNum = 50;
+    form.Detection = 'null';
+  };
+
+  const addTask = async () => {
+    try {
+      const data: any = await addPortScanTask(form);
+      Message.success(data.msg);
+    } finally {
+      visible.value = false;
+      clearForm();
+      await fetchData();
+      setLoading(false);
+    }
+  };
+
+  const handleClick = () => {
+    visible.value = true;
+  };
+  const handleBeforeOk = () => {
+    addTask();
+    fetchData();
+    return true;
+  };
+  const handleCancel = () => {
+    visible.value = false;
+  };
+  const taskname = ref('');
+  const drawerVisible = ref(false);
+
+  const handleDrawerClick = () => {
+    drawerVisible.value = true;
+  };
+
+  const handleDrawerCancel = () => {
+    drawerVisible.value = false;
+  };
+
+  const handleDetailsClick = (cusName: string) => {
+    taskname.value = cusName;
+    handleDrawerClick();
+  };
+
+  const delAllTask = async () => {
+    setLoading(true);
+    try {
+      const data: any = await delAllPortScanTask();
+      Message.success(data.msg);
+      await fetchData();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const delTask = async (cusName: string) => {
+    setLoading(true);
+    try {
+      const data: any = await delPortScanTask(cusName);
+      Message.success(data.msg);
+      await fetchData();
+    } finally {
+      setLoading(false);
     }
   };
 
