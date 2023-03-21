@@ -1,24 +1,45 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.ifgather', 'menu.infogather.subdomain']" />
     <a-card class="general-card" :title="$t('menu.list.searchTable')">
       <a-row>
         <a-col :flex="1">
           <a-form
             :model="formModel"
             :label-col-props="{ span: 6 }"
-            :wrapper-col-props="{ span: 16 }"
+            :wrapper-col-props="{ span: 18 }"
             label-align="left"
           >
             <a-row>
-              <a-col>
+              <a-col :span="12">
                 <a-form-item
                   field="searchParams"
-                  :label="$t('searchTable.scan.task')"
+                  :label="$t('searchTable.columns.subdomain')"
                 >
                   <a-input
-                    v-model="formModel.searchParams.taskname"
-                    :placeholder="$t('searchTable.scan.task')"
+                    v-model="formModel.searchParams.SubDomain"
+                    :placeholder="$t('searchTable.columns.subdomain')"
+                  />
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-item
+                  field="searchParams"
+                  :label="$t('searchTable.columns.ip')"
+                >
+                  <a-input
+                    v-model="formModel.searchParams.IP"
+                    :placeholder="$t('searchTable.columns.ip')"
+                  />
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-item
+                  field="searchParams"
+                  :label="$t('searchTable.columns.location')"
+                >
+                  <a-input
+                    v-model="formModel.searchParams.Location"
+                    :placeholder="$t('searchTable.columns.location')"
                   />
                 </a-form-item>
               </a-col>
@@ -45,27 +66,7 @@
       </a-row>
       <a-divider style="margin-top: 0" />
       <a-row style="margin-bottom: 16px">
-        <a-col :span="12">
-          <a-space>
-            <a-button :type="'primary'" :status="'normal'" @click="handleClick">
-              <template #icon>
-                <icon-plus />
-              </template>
-              添加任务
-            </a-button>
-            <a-popconfirm
-              content="清空任务并不会终止正在进行的任务，如需清除推荐在任务完成后进行"
-              @ok="delAllTask()"
-            >
-              <a-button :status="'danger'">
-                <template #icon>
-                  <icon-delete />
-                </template>
-                清空任务
-              </a-button>
-            </a-popconfirm>
-          </a-space>
-        </a-col>
+        <a-col :span="12"> </a-col>
         <a-col
           :span="12"
           style="display: flex; align-items: center; justify-content: end"
@@ -140,61 +141,7 @@
         :size="size"
         @page-change="onPageChange"
       >
-        <template #operations="{ record }">
-          <a-button
-            type="text"
-            size="small"
-            :shape="'square'"
-            :status="'normal'"
-            @click="handleDetailsClick(record.cus_name)"
-          >
-            查看详情
-          </a-button>
-          <a-popconfirm
-            :type="'warning'"
-            content="真删？"
-            @ok="delTask(record.cus_name)"
-          >
-            <a-button
-              type="text"
-              :shape="'square'"
-              size="small"
-              :status="'danger'"
-            >
-              删除
-            </a-button>
-          </a-popconfirm>
-        </template>
       </a-table>
-      <a-modal
-        v-model:visible="visible"
-        title="Modal Form"
-        @cancel="handleCancel"
-        @before-ok="handleBeforeOk"
-      >
-        <a-form :model="form">
-          <a-form-item field="name" label="厂商名">
-            <a-input v-model="form.CusName" />
-          </a-form-item>
-          <a-form-item field="post" label="域名列表">
-            <a-textarea v-model="form.Domain" />
-          </a-form-item>
-        </a-form>
-      </a-modal>
-      <a-split />
-      <TaskDetail :nsq-info="portScanTask" nsq-id="port" />
-      <a-drawer
-        :width="'70%'"
-        :visible="drawerVisible"
-        :footer="false"
-        @cancel="handleDrawerCancel"
-        unmountOnClose
-      >
-        <template #header>
-          <span>子域名扫描详情</span>
-        </template>
-        <subdomain-detail :taskname="taskname" />
-      </a-drawer>
     </a-card>
   </div>
 </template>
@@ -208,24 +155,24 @@
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import cloneDeep from 'lodash/cloneDeep';
   import Sortable from 'sortablejs';
-  import TaskDetail from '@/views/scan/engine/taskDetail/index.vue';
-  import { getNsqInfo, NsqInfo } from '@/api/engine';
-  import {
-    addSubDomainTask,
-    delAllSubDomainTask,
-    delSubDomainTask,
-    getSubDomainTask,
-  } from '@/api/subdomain';
-  import { Message } from '@arco-design/web-vue';
-  import SubdomainDetail from '@/views/infogather/subdomainScan/subdomainDetail/index.vue';
+  import { getSubDomainDetails } from '@/api/subdomain';
 
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
   type Column = TableColumnData & { checked?: true };
 
+  const props = defineProps({
+    taskname: {
+      type: String,
+      required: true,
+    },
+  });
+
   const generateFormModel = () => {
     return {
       searchParams: {
-        taskname: '',
+        SubDomain: '',
+        IP: '',
+        Location: '',
       },
     };
   };
@@ -238,38 +185,6 @@
 
   const size = ref<SizeProps>('medium');
 
-  const visible = ref(false);
-  const form = reactive({
-    CusName: '',
-    Domain: '',
-  });
-
-  const clearForm = () => {
-    form.CusName = '';
-    form.Domain = '';
-  };
-
-  const addTask = async () => {
-    try {
-      const data: any = await addSubDomainTask(form);
-      Message.success(data.msg);
-    } finally {
-      clearForm();
-      setLoading(false);
-    }
-  };
-
-  const handleClick = () => {
-    visible.value = true;
-  };
-  const handleBeforeOk = () => {
-    Promise.all([addTask()]).then(() => {
-      fetchData();
-    });
-  };
-  const handleCancel = () => {
-    visible.value = false;
-  };
   const basePagination: Pagination = {
     page: 1,
     limit: 10,
@@ -277,17 +192,6 @@
   const pagination = reactive({
     ...basePagination,
   });
-  const portScanTask = ref<NsqInfo>({} as NsqInfo);
-  const fetchPortScanNsqInfo = async () => {
-    setLoading(true);
-    try {
-      const data: any = await getNsqInfo('portscan');
-      portScanTask.value = data;
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchPortScanNsqInfo();
   const densityList = computed(() => [
     {
       name: t('searchTable.size.mini'),
@@ -312,33 +216,37 @@
       dataIndex: 'id',
     },
     {
-      title: t('searchTable.columns.name'),
-      dataIndex: 'cus_name',
+      title: t('searchTable.columns.subdomain'),
+      dataIndex: 'subdomain',
     },
     {
-      title: t('searchTable.columns.domain_num'),
-      dataIndex: 'domain_num',
+      title: t('searchTable.columns.ip'),
+      dataIndex: 'ip',
+      slotName: 'ip',
     },
     {
-      title: t('searchTable.columns.scan_num'),
-      dataIndex: 'scan_num',
+      title: t('searchTable.columns.location'),
+      dataIndex: 'location',
+    },
+    {
+      title: t('searchTable.columns.cdn'),
+      dataIndex: 'cdn',
+    },
+    {
+      title: t('searchTable.columns.cname'),
+      dataIndex: 'cname',
     },
     {
       title: t('searchTable.columns.createdTime'),
       dataIndex: 'create_at',
     },
-    {
-      title: t('searchTable.columns.operations'),
-      dataIndex: 'operations',
-      slotName: 'operations',
-    },
   ]);
   const fetchData = async (
-    params: Params = { page: 1, limit: 10, searchParams: '' }
+    params = { page: 1, limit: 10, taskname: props.taskname, searchParams: '' }
   ) => {
     setLoading(true);
     try {
-      const data: any = await getSubDomainTask(params);
+      const data: any = await getSubDomainDetails(params);
       renderData.value = data.data;
       pagination.page = params.page;
       pagination.total = data.count;
@@ -353,11 +261,17 @@
     const searchParams = JSON.stringify(formModel.value.searchParams);
     fetchData({
       ...basePagination,
+      taskname: props.taskname,
       searchParams,
-    } as unknown as Params);
+    });
   };
   const onPageChange = (page: number) => {
-    fetchData({ ...basePagination, page });
+    fetchData({
+      ...basePagination,
+      page,
+      taskname: props.taskname,
+      searchParams: JSON.stringify(formModel.value.searchParams),
+    });
   };
 
   fetchData();
@@ -419,45 +333,6 @@
     }
   };
 
-  const taskname = ref('');
-
-  const handleDetailsClick = (cusName: string) => {
-    taskname.value = cusName;
-    handleDrawerClick();
-  };
-
-  const delTask = async (cusName: string) => {
-    setLoading(true);
-    try {
-      const data: any = await delSubDomainTask(cusName);
-      Message.success(data.msg);
-      await fetchData();
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const delAllTask = async () => {
-    setLoading(true);
-    try {
-      const data: any = await delAllSubDomainTask();
-      Message.success(data.msg);
-      await fetchData();
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const drawerVisible = ref(false);
-
-  const handleDrawerClick = () => {
-    drawerVisible.value = true;
-  };
-
-  const handleDrawerCancel = () => {
-    drawerVisible.value = false;
-  };
-
   watch(
     () => columns.value,
     (val) => {
@@ -473,7 +348,7 @@
 
 <script lang="ts">
   export default {
-    name: 'Port',
+    name: 'subdomainDetail',
   };
 </script>
 

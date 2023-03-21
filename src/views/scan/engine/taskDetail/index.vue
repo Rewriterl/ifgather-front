@@ -63,7 +63,7 @@
   const emptyNsq = async () => {
     setLoading(true);
     try {
-      const data = await emptyNsqInfo(props.nsqId);
+      const data: any = await emptyNsqInfo(props.nsqId);
       Message.success(data.msg);
     } finally {
       setLoading(false);

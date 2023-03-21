@@ -8,7 +8,7 @@ export function getPortList(params: Params) {
 }
 
 export function getPortScanTask(params: Params) {
-  // return axios.get('/scan/porttask', {
-  //   params,
-  // });
+  return axios.get('/collector/portscan', {
+    params,
+  });
 }

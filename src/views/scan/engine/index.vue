@@ -451,7 +451,8 @@
   const fetchDomainNsqInfo = async () => {
     setLoading(true);
     try {
-      taskState.domainRenderData = await getNsqInfo('subdomain');
+      const data: any = await getNsqInfo('subdomain');
+      taskState.domainRenderData = data;
     } finally {
       setLoading(false);
     }
@@ -468,7 +469,8 @@
   const fetchWebinfoNsqInfo = async () => {
     setLoading(true);
     try {
-      taskState.webinfoRenderData = await getNsqInfo('webinfo');
+      const data: any = await getNsqInfo('webinfo');
+      taskState.webinfoRenderData = data;
     } finally {
       setLoading(false);
     }

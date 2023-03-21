@@ -44,6 +44,7 @@ export default {
   'menu.usermanager': '用户管理',
   'menu.infogather': '信息收集',
   'menu.scan': '综合扫描管理',
+  'menu.ifgather': '信息收集',
   'menu.arcoWebsite': 'Arco Design',
   'menu.faq': '常见问题',
   'navbar.docs': '文档中心',
