@@ -67,6 +67,7 @@ export default {
   'searchTable.columns.subdomain': '子域名',
   'searchTable.columns.banalyze': '指纹',
   'searchTable.search.banalyze': '指纹库管理',
+  'searchTable.banalyze.name': '指纹名',
   'searchTable.columns.servicename': '服务名',
   'searchTable.columns.ip': 'IP',
   'searchTable.columns.host_num': '主机数',
@@ -89,7 +90,7 @@ export default {
   // actions
   'searchTable.actions.refresh': '刷新',
   'searchTable.actions.addBanalyze': '添加指纹',
-  'searchTable.actions.importBanalyze': '导入指纹',
+  'searchTable.actions.importBanalyze': '批量导入指纹',
   'searchTable.actions.density': '密度',
   'searchTable.actions.columnSetting': '列设置',
 };

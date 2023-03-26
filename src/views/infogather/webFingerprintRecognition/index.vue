@@ -134,7 +134,7 @@
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import cloneDeep from 'lodash/cloneDeep';
   import Sortable from 'sortablejs';
-  import { getPortScanTask } from '@/api/port';
+  import { scanBanalyze } from '@/api/fingerprint';
 
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
   type Column = TableColumnData & { checked?: true };
@@ -146,7 +146,7 @@
       },
     };
   };
-  const { loading, setLoading } = useLoading(true);
+  const { loading, setLoading } = useLoading(false);
   const { t } = useI18n();
   const renderData = ref<LoginLogRecord[]>([]);
   const formModel = ref(generateFormModel());
@@ -186,28 +186,23 @@
       dataIndex: 'id',
     },
     {
-      title: t('searchTable.columns.name'),
-      dataIndex: 'cus_name',
+      title: t('searchTable.banalyze.name'),
+      dataIndex: 'name',
     },
     {
-      title: t('searchTable.columns.host_num'),
-      dataIndex: 'host_num',
+      title: t('searchTable.fingerprint.description'),
+      dataIndex: 'description',
     },
+
     {
-      title: t('searchTable.columns.scan_num'),
-      dataIndex: 'scan_num',
-    },
-    {
-      title: t('searchTable.columns.createdTime'),
-      dataIndex: 'create_at',
+      title: t('searchTable.columns.version'),
+      dataIndex: 'version',
     },
   ]);
-  const fetchData = async (
-    params: Params = { page: 1, limit: 10, searchParams: '' }
-  ) => {
+  const fetchData = async (params: Params) => {
     setLoading(true);
     try {
-      const data: any = await getPortScanTask(params);
+      const data: any = await scanBanalyze(params);
       renderData.value = data.data;
       pagination.page = params.page;
       pagination.total = data.count;
@@ -229,7 +224,6 @@
     fetchData({ ...basePagination, page });
   };
 
-  fetchData();
   const reset = () => {
     formModel.value = generateFormModel();
   };

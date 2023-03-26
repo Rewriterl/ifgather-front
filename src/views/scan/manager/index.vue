@@ -253,12 +253,10 @@
     visible.value = true;
   };
   const handleBeforeOk = (done: any) => {
-    window.setTimeout(() => {
-      addManager();
-      fetchData();
-      clearForm();
-      done();
-    }, 300);
+    addManager();
+    fetchData();
+    clearForm();
+    done();
   };
   const handleAssetsCancel = () => {
     visible.value = false;

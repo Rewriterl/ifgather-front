@@ -48,6 +48,7 @@ export default {
   'searchTable.columns.remark': 'Remark',
   'searchTable.columns.subdomain': 'Subdomain',
   'searchTable.columns.banalyze': 'Fingerprint',
+  'searchTable.banalyze.name': 'Fingerprint Name',
   'searchTable.search.banalyze': 'Fingerprint database management',
   'searchTable.columns.servicename': 'Service Name',
   'searchTable.columns.ip': 'IP',
@@ -89,7 +90,7 @@ export default {
   // actions
   'searchTable.actions.refresh': 'refresh',
   'searchTable.actions.addBanalyze': 'Add fingerprint',
-  'searchTable.actions.importBanalyze': 'Import fingerprint',
+  'searchTable.actions.importBanalyze': 'Batch import fingerprints',
   'searchTable.actions.density': 'density',
   'searchTable.actions.columnSetting': 'columnSetting',
 };

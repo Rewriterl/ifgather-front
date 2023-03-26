@@ -62,8 +62,15 @@
           style="display: flex; align-items: center; justify-content: end"
         >
           <a-tooltip :content="$t('searchTable.actions.importBanalyze')">
-            <div class="action-icon" @click="importFingerprint">
-              <a-upload action="/collector/banalyze" />
+            <div class="action-icon">
+              <a-upload :custom-request="batchUpload" />
+            </div>
+          </a-tooltip>
+          <a-tooltip :popup-visible="false">
+            <div class="action-icon">
+              <a-popconfirm content="真删？" @ok="delAll">
+                <a-button :status="'danger'">清除全部</a-button>
+              </a-popconfirm>
             </div>
           </a-tooltip>
           <a-tooltip :content="$t('searchTable.actions.addBanalyze')">
@@ -141,7 +148,57 @@
         :size="size"
         @page-change="onPageChange"
       >
+        <template #description="{ record }">
+          <a-typography-paragraph
+            :ellipsis="{
+              rows: 2,
+              showTooltip: true,
+            }"
+          >
+            {{ record.description }}
+          </a-typography-paragraph>
+        </template>
+        <template #operations="{ record }">
+          <a-button
+            type="text"
+            size="small"
+            :shape="'square'"
+            :status="'normal'"
+            @click="handleDetailsClick(record.key)"
+          >
+            查看详情
+          </a-button>
+          <a-popconfirm
+            :type="'warning'"
+            content="真删？"
+            @ok="delOne(record.key)"
+          >
+            <a-button
+              type="text"
+              :shape="'square'"
+              size="small"
+              :status="'danger'"
+            >
+              删除
+            </a-button>
+          </a-popconfirm>
+        </template>
       </a-table>
+      <a-modal
+        v-model:visible="visible"
+        title="添加指纹"
+        @cancel="handleCancel"
+      >
+        <a-form :model="form">
+          <a-form-item field="ba" label="指纹">
+            <a-textarea
+              :disabled="true"
+              placeholder="此接口暂时弃用"
+              v-model="form.ba"
+            />
+          </a-form-item>
+        </a-form>
+      </a-modal>
     </a-card>
   </div>
 </template>
@@ -155,7 +212,14 @@
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import cloneDeep from 'lodash/cloneDeep';
   import Sortable from 'sortablejs';
-  import { getBanalyzeList } from '@/api/fingerprint';
+  import {
+    addBanalyze,
+    batchUploadBanalyze,
+    delAllBanalyze,
+    delBanalyze,
+    getBanalyzeList,
+  } from '@/api/fingerprint';
+  import { Message } from '@arco-design/web-vue';
 
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
   type Column = TableColumnData & { checked?: true };
@@ -214,10 +278,16 @@
     {
       title: t('searchTable.fingerprint.description'),
       dataIndex: 'description',
+      slotName: 'description',
     },
     {
       title: t('searchTable.columns.createdTime'),
       dataIndex: 'create_at',
+    },
+    {
+      title: t('searchTable.columns.operations'),
+      dataIndex: 'operations',
+      slotName: 'operations',
     },
   ]);
   const fetchData = async (
@@ -244,9 +314,10 @@
     } as unknown as Params);
   };
 
-  const addFingerprint = () => {};
+  const addFingerprint = () => {
+    visible.value = true;
+  };
 
-  const importFingerprint = () => {};
   const onPageChange = (page: number) => {
     fetchData({ ...basePagination, page });
   };
@@ -308,6 +379,78 @@
         });
       });
     }
+  };
+
+  const batchUpload = async (option: any) => {
+    setLoading(true);
+    const { fileItem } = option;
+    const formData = new FormData();
+    formData.append('data', fileItem.file);
+    try {
+      const data: any = await batchUploadBanalyze(formData);
+      await fetchData();
+      Message.success(data.msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const delOne = async (key: string) => {
+    setLoading(true);
+    try {
+      const data: any = await delBanalyze(key);
+      await fetchData();
+      Message.success(data.msg);
+    } catch (err) {
+      // you can report use errorHandler or other
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const delAll = async () => {
+    setLoading(true);
+    try {
+      const data: any = await delAllBanalyze();
+      await fetchData();
+      Message.success(data.msg);
+    } catch (err) {
+      // you can report use errorHandler or other
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const visible = ref(false);
+  const form = reactive({
+    ba: '',
+  });
+  const clearForm = () => {
+    form.ba = '';
+  };
+  const handleCancel = () => {
+    visible.value = false;
+    clearForm();
+  };
+
+  const addOne = async () => {
+    setLoading(true);
+    try {
+      const data: any = await addBanalyze(form.ba);
+      await fetchData();
+      Message.success(data.msg);
+    } catch (err) {
+      // you can report use errorHandler or other
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBeforeOk = (done: any) => {
+    addOne();
+    fetchData();
+    clearForm();
+    done();
   };
 
   watch(

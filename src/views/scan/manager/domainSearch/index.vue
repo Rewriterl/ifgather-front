@@ -63,11 +63,11 @@
       <template #index="{ rowIndex }">
         {{ rowIndex + 1 + (pagination.page - 1) * pagination.limit }}
       </template>
-      <template #flag="{ rowIndex }">
-        {{ rowIndex.flag ? '已扫描' : '未扫描' }}
+      <template #flag="{ record }">
+        {{ record.flag ? '已扫描' : '未扫描' }}
       </template>
-      <template #nsq_flag="{ rowIndex }">
-        {{ rowIndex.nsq_flag ? '已投递' : '未投递' }}
+      <template #nsq_flag="{ record }">
+        {{ record.nsq_flag ? '已投递' : '未投递' }}
       </template>
     </a-table>
   </a-card>
